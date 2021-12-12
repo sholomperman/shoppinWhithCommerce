@@ -14,13 +14,21 @@ const Checkout = ({ cart }) => {
     const classes = useStyles()
     const [activeStep, setActiveStep] = useState(0)
     const [checkoutToken, setCheckoutToken] = useState(null)
+    const [userInput, setUserInput] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    city: '',
+    address1: '',
+    zip: ''
+    })
+    console.log('activeStep is ',activeStep)
 
     useEffect(() => {
         const generateToken = async() => {
             try {
                 const token = await commerce.checkout.generateToken(cart.id, { type: 'cart' })
                 setCheckoutToken(token)
-                // console.log(token)
             } catch (error) {
                 console.log(error)
             }
@@ -28,13 +36,32 @@ const Checkout = ({ cart }) => {
         generateToken()
     }, [cart])
 
+    const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    const backStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
+
+    // const next = (data) => {
+    //     setShippingData(data)
+    //     nextStep()
+    // }
 
     const Form = () => activeStep === 0
-        ? <AddressForm checkoutToken={checkoutToken} />
-        : <PaymentDetails />
+        ? <AddressForm
+            nextStep={nextStep}
+            userInput={userInput}
+            setUserInput={setUserInput}
+            checkoutToken={checkoutToken}
+        />
+        : <PaymentDetails
+            nextStep={nextStep}
+            backStep={backStep}
+            userInput={userInput}
+        />
     
     const Confirmation = () => (
+        <>
         <div>Confirmation</div>
+        <Button onClick={ ()=> backStep() }>back</Button>
+        </>
     );
 
     return (

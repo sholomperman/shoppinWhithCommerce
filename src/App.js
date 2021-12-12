@@ -11,17 +11,29 @@ const App = () => {
     const [cart, setCart] = useState({})
 
     const fetchData = async () => {
-        const { data } = await commerce.products.list();
-        setProducts(data)
+        try {
+            const { data } = await commerce.products.list();
+            setProducts(data)
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const fetchCart = async () => {
-        setCart(await commerce.cart.retrieve());
+        try {
+            setCart(await commerce.cart.retrieve());
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const handelProductCartChange = async (productId, quantity) => {
-        const { cart } = await commerce.cart.add(productId, quantity)
-        setCart(cart)
+        try {
+            const { cart } = await commerce.cart.add(productId, quantity)
+            setCart(cart)
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     useEffect(() => {
@@ -42,6 +54,9 @@ const App = () => {
     const handelEmptyCart = async() => {
         const { cart } = await commerce.cart.empty()
         setCart(cart)
+    }
+    if (products.length < 0){
+        return(<h1>Loading...</h1>);
     }
     return (
         <Router>
